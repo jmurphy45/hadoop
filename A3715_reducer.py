@@ -1,23 +1,33 @@
 #!/usr/bin/python
 
 import sys
+import operator
 
-output = file('reducer.txt', 'w')
+outputFile = open('reducer.txt', 'w')
 previous_key = None
 total = 0
-file = open('mapper.txt','r')
-kvList = {}
+inputFile = open('mapper.txt','r')
+kvDict = {}
 
-for line in file:
-    key, value = line.split("\t",1)
-    if key in kvList:
-        value = kvList[key]
-        kvList[key] = (int(value)+1)
+for line in inputFile:
+    s = line.split("\t")
+    s[1] = int(s[1].split("\n")[0])
+    #print (s)
+    key = s[0]
+    value = s[1]
+    if key in kvDict:
+        value = kvDict[key]
+        kvDict[key] = (int(value)+1)
         total = total + 1;
     else:
-        kvList[key] = value
+        kvDict[key] = value
         total = total + 1;
    
-for key in kvList:
-    print "Key = " + str(key) +  "\n" + "value = " + str(kvList[key])
-    output.write(str(key) + " -> " + str(kvList[key]) + "\n")
+kvSorted = sorted(kvDict.items(), key=operator.itemgetter(1))
+
+for group in kvSorted:
+    print (group)
+    outputFile.write(str(group[0]) + " --> " + str(group[1]) + "\n")
+
+inputFile.close()
+outputFile.close()
